@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import com.example.henry.latacungaar.EstructuraDatos.Cliente;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -27,14 +28,27 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
 
 import android.content.Intent;
 import android.view.View;
 import android.widget.Toast;
 
 public class LoginActivity extends AppCompatActivity {
-    //variable de firebase para autentificacion con facebook y google
+    //variables de firebase para autentificacion con facebook y google
     private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+    //firebase almanecenamiento
+    private DatabaseReference mFirebaseDatabase;
+    private FirebaseDatabase mFirebaseInstance;
+    private String idUsuario;
+
     //auth facebook
     private CallbackManager mCallbackManager;
     private static  final String TAG ="FACELOG";
@@ -50,6 +64,40 @@ public class LoginActivity extends AppCompatActivity {
 
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
+        //deteccion de cambios en la autentificacion y registro en el nodo user
+        mAuthListener =new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                final FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    Toast.makeText(LoginActivity.this,"Ud esta logeado",Toast.LENGTH_LONG);
+                    Intent actividadprincipal=new Intent(LoginActivity.this,MainActivity.class);
+                    startActivity(actividadprincipal);
+                    //ingreso a la database en firebase
+                    mFirebaseInstance = FirebaseDatabase.getInstance();
+                    mFirebaseDatabase = mFirebaseInstance.getReference();
+                    Query queryCliente = mFirebaseDatabase.child("cliente").orderByChild("idcliente").equalTo(user.getUid());
+                    queryCliente.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()) {
+                                //Si encuentra regitro no hace nada mas
+                            }else {
+                                //Como no esta registrado el cliente procede al registro en firebase
+                                idUsuario = mFirebaseDatabase.push().getKey();//genera la key unica de cada cliente
+                                Cliente cliente = new Cliente( user.getDisplayName(),user.getEmail(),user.getUid()); //instancia de cliente
+                                mFirebaseDatabase.child("cliente").child(idUsuario).setValue(cliente);//guarda la informacion en firebase
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+            }
+        };
 
         // Initialize Facebook Login button
         mCallbackManager = CallbackManager.Factory.create();
@@ -98,21 +146,13 @@ public class LoginActivity extends AppCompatActivity {
 
     }
     //Inicio metodos de auth Facebook
+    //Metodo de reconocer cambio en la autentificacion facebook y google
     @Override
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser!=null){
-            updateUI();
-        }
+        mAuth.addAuthStateListener(mAuthListener);
 
-    }
-   //Metodo para ir a la actividad principal luego de inicio con facebook
-    private void updateUI() {
-        Toast.makeText(LoginActivity.this,"Ud esta logeado",Toast.LENGTH_LONG);
-        Intent actividadprincipal=new Intent(LoginActivity.this,MainActivity.class);
-        startActivity(actividadprincipal);
     }
 
     private void handleFacebookAccessToken(AccessToken token) {
@@ -127,13 +167,13 @@ public class LoginActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            updateUI();
+                           // updateUI();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             Toast.makeText(LoginActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
-                            updateUI();
+                            //updateUI();
                         }
 
                         // ...
@@ -171,7 +211,7 @@ public class LoginActivity extends AppCompatActivity {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             firebaseAuthWithGoogle(account);
             // Signed in successfully, show authenticated UI.
-            updateUI();
+            //updateUI();
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
@@ -192,7 +232,7 @@ public class LoginActivity extends AppCompatActivity {
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                            // updateUI(user);
-                            updateUI();
+                           // updateUI();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
