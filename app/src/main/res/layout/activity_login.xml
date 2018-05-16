@@ -4,20 +4,51 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#01316A"
     tools:context=".LoginActivity">
 
-    <com.facebook.login.widget.LoginButton
-        android:id="@+id/login_button"
-        android:layout_width="209dp"
-        android:layout_height="70dp"
-        android:layout_centerInParent="true"
-        android:layout_gravity="center_horizontal" />
-
-    <com.google.android.gms.common.SignInButton
-        android:id="@+id/sign_in_button"
-        android:layout_width="209dp"
-        android:layout_height="70dp"
+    <android.support.v7.widget.CardView
+        android:layout_width="227dp"
+        android:layout_height="40dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="185dp" />
+        android:layout_marginBottom="93dp"
+        app:cardBackgroundColor="@color/com_facebook_blue"
+        app:cardCornerRadius="25dp"
+        app:cardElevation="15dp">
+
+        <RelativeLayout
+            android:layout_width="231dp"
+            android:layout_height="match_parent">
+
+            <com.facebook.login.widget.LoginButton
+                android:id="@+id/login_button"
+                android:layout_width="209dp"
+                android:layout_height="70dp"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center_horizontal" />
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:layout_width="227dp"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="154dp"
+        app:cardBackgroundColor="@android:color/background_light"
+        app:cardCornerRadius="25dp"
+        app:cardElevation="15dp">
+
+        <com.google.android.gms.common.SignInButton
+            android:id="@+id/sign_in_button"
+            android:layout_width="210dp"
+            android:layout_height="40dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="20dp"
+             />
+    </android.support.v7.widget.CardView>
+
 </RelativeLayout>
