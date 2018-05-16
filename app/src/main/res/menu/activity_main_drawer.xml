@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_gallery"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="Atractivos Turísticos" />
+        <item
+            android:id="@+id/nav_camera"
+            android:icon="@drawable/ic_augmented_reality"
+            android:title="Experiencia AR" />
+        <item
+            android:id="@+id/nav_slideshow"
+            android:icon="@drawable/mapa"
+            android:title="Circuito Turístico" />
+        <item
+            android:id="@+id/nav_manage"
+            android:icon="@drawable/ic_account_card_details"
+            android:title="Acerca de" />
+    </group>
+
+    <item android:title="Communicate">
+        <menu>
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_menu_manage"
+                android:title="@string/action_settings" />
+            <item
+                android:id="@+id/nav_send"
+                android:icon="@drawable/ic_exit_to_app"
+                android:title="Salir" />
+        </menu>
+    </item>
+
+</menu>

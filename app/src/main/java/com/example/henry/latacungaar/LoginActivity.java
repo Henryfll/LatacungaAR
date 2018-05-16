@@ -1,5 +1,7 @@
 package com.example.henry.latacungaar;
 
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -38,12 +40,14 @@ import com.google.firebase.database.ValueEventListener;
 
 import android.content.Intent;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 public class LoginActivity extends AppCompatActivity {
     //variables de firebase para autentificacion con facebook y google
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private ProgressBar progressBar;
     //firebase almanecenamiento
     private DatabaseReference mFirebaseDatabase;
     private FirebaseDatabase mFirebaseInstance;
@@ -52,6 +56,8 @@ public class LoginActivity extends AppCompatActivity {
     //auth facebook
     private CallbackManager mCallbackManager;
     private static  final String TAG ="FACELOG";
+    private LoginButton loginButton;
+
     //auth google
      private SignInButton button;
      private  static final int RC_SIGN_IN=2;
@@ -61,7 +67,10 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        //barra de progreso
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        //cambiar color a la barra de progreso
+        progressBar.getIndeterminateDrawable().setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC_IN);
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
         //deteccion de cambios en la autentificacion y registro en el nodo user
@@ -101,7 +110,7 @@ public class LoginActivity extends AppCompatActivity {
 
         // Initialize Facebook Login button
         mCallbackManager = CallbackManager.Factory.create();
-        LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
+       loginButton = (LoginButton) findViewById(R.id.login_button);
         loginButton.setReadPermissions("email", "public_profile");
         loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
@@ -155,8 +164,16 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mAuth.removeAuthStateListener(mAuthListener);
+    }
+
     private void handleFacebookAccessToken(AccessToken token) {
         Log.d(TAG, "handleFacebookAccessToken:" + token);
+        progressBar.setVisibility(View.VISIBLE);
+        loginButton .setVisibility(View.GONE);
 
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
         mAuth.signInWithCredential(credential)
@@ -175,6 +192,8 @@ public class LoginActivity extends AppCompatActivity {
                                     Toast.LENGTH_SHORT).show();
                             //updateUI();
                         }
+                        progressBar.setVisibility(View.GONE);
+                        loginButton.setVisibility(View.VISIBLE);
 
                         // ...
                     }
@@ -221,7 +240,8 @@ public class LoginActivity extends AppCompatActivity {
     }
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
-
+        progressBar.setVisibility(View.VISIBLE);
+        button.setVisibility(View.GONE);
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -240,7 +260,8 @@ public class LoginActivity extends AppCompatActivity {
                                     Toast.LENGTH_SHORT).show();
                            // updateUI(null);
                         }
-
+                        progressBar.setVisibility(View.GONE);
+                        button.setVisibility(View.VISIBLE);
                         // ...
                     }
                 });
