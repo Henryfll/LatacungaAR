@@ -1,9 +1,11 @@
 package com.example.henry.latacungaar;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -103,22 +105,45 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
+        //int id = item.getItemId();
+        switch (item.getItemId()) {
+            case R.id.nav_camera:
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+                break;
+            case R.id.nav_slideshow:
 
-        } else if (id == R.id.nav_slideshow) {
+                break;
+            case R.id.nav_manage:
 
-        } else if (id == R.id.nav_manage) {
+                break;
+            case R.id.nav_share:
 
-        } else if (id == R.id.nav_share) {
+                break;
+            case R.id.nav_gallery:
 
-        } else if (id == R.id.nav_send) {
-
+                break;
+            case R.id.nav_exit:
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.logout)
+                        .setMessage("Desea Salir?")
+                        .setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                FirebaseAuth.getInstance().signOut();
+                                LoginManager.getInstance().logOut();
+                                goLoginScreen();
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .show();
+                break;
         }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
