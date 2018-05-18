@@ -51,7 +51,7 @@ public class LoginActivity extends AppCompatActivity {
     //firebase almanecenamiento
     private DatabaseReference mFirebaseDatabase;
     private FirebaseDatabase mFirebaseInstance;
-    private String idUsuario;
+    //private String idUsuario;
 
     //auth facebook
     private CallbackManager mCallbackManager;
@@ -93,9 +93,9 @@ public class LoginActivity extends AppCompatActivity {
                                 //Si encuentra regitro no hace nada mas
                             }else {
                                 //Como no esta registrado el cliente procede al registro en firebase
-                                idUsuario = mFirebaseDatabase.push().getKey();//genera la key unica de cada cliente
+                               //idUsuario = mFirebaseDatabase.push().getKey();//genera la key unica de cada cliente
                                 Cliente cliente = new Cliente( user.getDisplayName(),user.getEmail(),user.getUid()); //instancia de cliente
-                                mFirebaseDatabase.child("cliente").child(idUsuario).setValue(cliente);//guarda la informacion en firebase
+                                mFirebaseDatabase.child("cliente").child(user.getUid()).setValue(cliente);//guarda la informacion en firebase
                             }
                         }
 
